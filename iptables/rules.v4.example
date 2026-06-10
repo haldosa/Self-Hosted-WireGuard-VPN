@@ -1,0 +1,54 @@
+# Example iptables rules for WireGuard multi-IP VPN
+# These are automatically managed by wireguard-setup.sh
+#
+# To apply manually:
+#   sudo iptables-restore < iptables/rules.v4.example
+#
+# To save current rules:
+#   sudo netfilter-persistent save
+
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+
+# Allow established/related connections
+-A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+
+# Allow loopback
+-A INPUT -i lo -j ACCEPT
+
+# Allow SSH
+-A INPUT -p tcp --dport 22 -m state --state NEW -j ACCEPT
+
+# Allow WireGuard
+-A INPUT -p udp --dport 51820 -j ACCEPT
+
+# Allow forwarding to/from WireGuard interface
+-A FORWARD -i wg0 -j ACCEPT
+-A FORWARD -o wg0 -j ACCEPT
+
+# Reject everything else
+-A INPUT -j REJECT --reject-with icmp-host-prohibited
+-A FORWARD -j REJECT --reject-with icmp-host-prohibited
+
+COMMIT
+
+*nat
+:PREROUTING ACCEPT [0:0]
+:INPUT ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+:POSTROUTING ACCEPT [0:0]
+
+# SNAT rules - each VPN IP is routed out through its matching private IP
+# Oracle Cloud NATs each private IP to its corresponding reserved public IP
+#
+# Format: VPN IP -> Oracle Private IP -> (Oracle NATs to) -> Public IP
+-A POSTROUTING -s 10.200.0.PLACEHOLDER_1/32 -o ens3 -j SNAT --to-source 10.0.0.PLACEHOLDER_1
+-A POSTROUTING -s 10.200.0.PLACEHOLDER_2/32 -o ens3 -j SNAT --to-source 10.0.0.PLACEHOLDER_2
+-A POSTROUTING -s 10.200.0.PLACEHOLDER_3/32 -o ens3 -j SNAT --to-source 10.0.0.PLACEHOLDER_3
+-A POSTROUTING -s 10.200.0.PLACEHOLDER_4/32 -o ens3 -j SNAT --to-source 10.0.0.PLACEHOLDER_4
+-A POSTROUTING -s 10.200.0.PLACEHOLDER_5/32 -o ens3 -j SNAT --to-source 10.0.0.PLACEHOLDER_5
+-A POSTROUTING -s 10.200.0.PLACEHOLDER_6/32 -o ens3 -j SNAT --to-source 10.0.0.PLACEHOLDER_6
+
+COMMIT

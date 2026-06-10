@@ -1,0 +1,21 @@
+# Secondary Private IP Addresses
+# Add all secondary private IPs assigned in Oracle Cloud Console here.
+# These are separate from the primary IP which is managed by DHCP.
+#
+# After editing, apply with:
+#   sudo netplan apply
+#
+# Verify with:
+#   ip addr show ens3 | grep "inet "
+
+network:
+  version: 2
+  ethernets:
+    ens3:
+      addresses:
+        - 10.0.0.PLACEHOLDER_1/24   # -> Public IP: <PUBLIC_IP_1>
+        - 10.0.0.PLACEHOLDER_2/24   # -> Public IP: <PUBLIC_IP_2>
+        - 10.0.0.PLACEHOLDER_3/24   # -> Public IP: <PUBLIC_IP_3>
+        - 10.0.0.PLACEHOLDER_4/24   # -> Public IP: <PUBLIC_IP_4>
+        - 10.0.0.PLACEHOLDER_5/24   # -> Public IP: <PUBLIC_IP_5>
+        - 10.0.0.PLACEHOLDER_6/24   # -> Public IP: <PUBLIC_IP_6>
