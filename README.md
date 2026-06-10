@@ -181,7 +181,3 @@ clientN_10.0.0.X.conf
 **Secondary IPs missing after reboot:**
 - Verify netplan config: `cat /etc/netplan/99-secondary-ips.yaml`
 - Reapply: `sudo netplan apply`
-
-## License
-
-MIT
